@@ -1,0 +1,158 @@
+---
+title: "Take-home Exercise 2"
+description: |
+  Peer Evaluation
+author:
+  - name: LI HONGYI 
+    url: 
+    affiliation: SMU SCIS
+    affiliation_url: https://scis.smu.edu.sg
+date: "`r Sys.Date()`"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task Overview
+
+After a 24-hour fighting right before deadline last weekend, we successfully completed and submitted out Take-home Exercise 1 of analysing demography of participants in Ohio, the USA.
+
+However, it is very important and necessary for us to learn from our peers. Thus, this week, our task is to pick up our favorite peer and sincerely and unreservedly criticize his/her work last week. It is a process where both of us can make improvement and learn from each other.
+
+In this peer evaluation, I choose [*David*](https://dkwx1234.netlify.app/th_ex/takehomeex1.html), who is one of my teammates. The evaluation contains a brief summary of his work giving an `overview` of his visualization article, an `evaluation` of each graph he made in terms of *clarity* and *aesthetics* and a `makeover suggestion` which may be supportive and helpful for his future improvement. 
+
+## Brief Summary of Peer's Work
+
+The article indicates the distribution of age in different education level, distribution of participants in different interest groups with different education level, and their happiness by interest group and education level.
+
+As for the clarity, variable age isn't grouped into subcategories that is easier for us to do further analysis. Labels of some axis are not shown in a understandable way (e.g what does count mean). 
+
+As for the aesthetics, it is very obvious that all graphs are in grey, which is not aesthetic and identifiable.
+
+## Evaluation and Makeover
+
+```{r include=FALSE}
+packages <- c('tidyverse','rvest','reshape2','ggtern','viridis','ggrepel','CGPfunctions','ggpubr')
+
+for (p in packages){
+  if (!require(p,character.only=T)){
+    install.packages(p)
+  }
+  library(p, character.only=T)
+}
+```
+```{r include=FALSE}
+Participant_data <- read_csv("data/Participants.csv")
+Participant_data <- Participant_data %>% rename(`Participant_ID` = `participantId`,`Household_Size` = `householdSize`, `Kids` = `haveKids`,`Age`=`age`,`Education` =`educationLevel` , `Interest`= `interestGroup`, `Joviality`=`joviality`)
+colnames(Participant_data)
+```
+
+### The Distribution of Age in Education Groups
+
+The original design and code are shown below:
+
+```{r}
+ggplot(data=Participant_data, 
+       aes(x=Age)) +
+    geom_histogram(bins=20) +
+facet_wrap(~ Education)
+```
+The age should be grouped into "<20", "21-30", "31-40", "41-50", "51-60" and it will should us a clearer distribution of age. Besides, label of y axis should be replaced with "No. of People" which is more understandable.
+
+First, with 'cut', we categorize age into subgroups.
+
+```{r}
+Participant_data$Age_Group<-cut(Participant_data$Age,
+                         breaks = c(17,20,30,40,50,60),
+                         labels = c("<20","21-30", "31-40", "41-50", "51-60"))
+head(Participant_data)
+```
+The new barchart shows a clear distribution of age in different education level.
+
+We can see that High School or College and Low are two age groups which have the largest and smallest number of participants. Besides, age group "<20" shows the smallest number of participants in each education level (which is reasonable because we only gather participants with age from 18 to 20 in that age group).
+
+```{r}
+ggplot(data=Participant_data, aes(x=Age_Group))+
+geom_bar() +
+ylim(0,150) +
+ylab("No.of\nPeople") +
+facet_wrap(~Education)+
+theme(axis.title.y=element_text(angle = 0))+
+ggtitle("The Distribution of Age in Education Groups")
+
+```
+### The Distribution of Education Level in Interest Groups
+
+The original graph and code are shown below:
+
+```{r}
+ggplot(data=Participant_data, aes(x=Education)) + 
+     geom_bar()+facet_wrap(~ Interest) +
+coord_flip()
+```
+
+The label of x axis should be replaced with "No. of People" which is more understandable. As for the layout, it is not easy to compare number of people in different interest groups with different education level. Besides, the y labels are too long (high school or college) to read.
+
+To improve the original design, we should change the layout and put all groups in a horizontal level so that the number of people in different groups is easy to compare. Besides, to solve the problem of education labels (especially in the new design the labels are too long and small to read), we can create legend with different color for different education level.
+
+```{r, layout="l-screen", fig.width=25, fig.height=5}
+ggplot(data=Participant_data, aes(x=Education, fill=Education)) + 
+     geom_bar()+facet_grid(~ Interest)+
+ylab("No.of\nPeople") +
+theme(axis.title.y=element_text(angle = 0),axis.text.x=element_text(angle = 15),legend.position = "bottom")+
+  ggtitle("The Distribution of Education Level in Interest Groups")
+
+```
+From the new design, we can see that in each interest group, high school or college and low are always two education level with largest and smallest number of participants. However, as for the other two education level groups, things are a bit different in each interest group. In interest groups E, the number of participants with bachelor are smaller than those with graduate,and in group I, they are basically equal, while in all the other interest groups, the number of first is always larger than the latter.
+
+
+### Happiness by Interest Groups and Education
+
+The original design and code are shown below.
+
+```{r}
+ggplot(data=Participant_data, aes(y = Joviality, x= Interest))+ 
+ geom_boxplot() +
+ facet_grid(~Education)
+```
+This box plot shows us clear difference of the distribution of joviality of participants in different education level in different interest groups. For example, the difference in high school and college is not obvious compared with the other education groups. IN bachelor, graduate and low education group, participants who joined in H, A and F interest group have the lowest joviality.
+
+Something could be done to improve this bar chart. Mean points could be added and every education group could be listed line by line to make the graph neat and make the comparsion easier.
+
+```{r, fig.width=5, fig.height=6}
+ggplot(data=Participant_data, aes(y = Joviality, x= Interest))+ 
+geom_boxplot() +
+stat_summary(geom = "point",fun.y="mean", colour ="red",size=1)+
+facet_grid(Education ~.)+
+ggtitle("The Distribution of Joviality \nby Interest Groups and Education")
+```
+
+
+### Happiness by Education Level
+
+The original design and code are shown below.
+
+```{r}
+ggplot(data=Participant_data, aes(y = Joviality, x= Education))+
+     geom_boxplot()
+```
+This box plot is not informative. It seems to show us that the means of joviality in different education level are different. However, hypothesis test should be down to verify it and get more details.
+
+However, we can still do some improvement of this graph. Means and notch can be added in this bar chart. Besides, violin plot could be added to give a clearer distribution of joviality in different education level.
+
+```{r, fig.width=5}
+ggplot(data=Participant_data, aes(y = Joviality, x= Education))+
+geom_violin(fill="light blue")+ 
+geom_boxplot(notch=TRUE, alpha=0.5, notchwidth=.3)+
+stat_summary(geom = "point",fun.y="mean", colour ="red",size=2)+
+ggtitle("The Distribution of Joviality in Education Groups")
+
+
+
+```
+After adding violin plot, we can see that the distribution of joviality in different education level are different. The shapes in bachelors and low groups are similar, with smaller number of participants in the middle value (0.5), while in graduate and high school or college groups are also similar, with lower number of participants at around 1st and 3rd quartiles. However, the shapes of bachelor and graduate groups are symmetric comparing with the other two.

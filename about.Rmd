@@ -1,0 +1,10 @@
+---
+title: "About this website"
+description: |
+  This website is created and used for *ISSS608 Visual Analysis* taught by **Prof** **Kam** *(SMU SCIS)*. Feel free to apply for *MITB* program and join in this class if you find it is fun after browsing my website!
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+

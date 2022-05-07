@@ -1,0 +1,15 @@
+---
+title: "Visual Analysis"
+description: |
+  Welcome to Jessie's website of Visual Analysis Course. You can witness how Jessie's growing up in the field of data visualization with all assignments of this course here. I hope you enjoy it!
+site: distill::distill_website
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Learn more about creating websites with Distill at:
+# https://rstudio.github.io/distill/website.html
+
+```
+

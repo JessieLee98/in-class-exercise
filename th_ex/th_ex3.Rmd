@@ -1,0 +1,94 @@
+---
+title: "Take-home Exercise 3"
+description: |
+  Putting Visual Analysis into Practical Use
+author:
+  - name: LI HONGYI 
+    url: 
+    affiliation: SMU SCIS
+    affiliation_url: https://scis.smu.edu.sg
+date: "`r Sys.Date()`"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task Overview: The Health of Employers
+
+In this take-home exercise, static and interactive methods should be used properly to explore the health of employers according to the data gathered from participants in Ohio, USA.
+
+Two main questions are explored:
+
+The distribution of employers, jobs over the areas and buildings; the distribution of education requirement, average salary and working hours per week etc.
+
+
+## Getting Started
+
+### Installing and Lauching Packages
+
+The following code chunk installs and lauchs packages we need.
+
+```{r}
+packages <- c('ggiraph', 'plotly', 
+             'DT', 'patchwork',
+             'gganimate', 'tidyverse',
+             'readxl', 'gifski', 'gapminder',
+             'treemap', 'treemapify',
+             'rPackedBar')
+
+for (p in packages){
+  if (!require(p,character.only=T)){
+    install.packages(p)
+  }
+  library(p, character.only=T)
+}
+```
+
+### Importing Data
+
+```{r message=FALSE, warning=FALSE}
+jobs <- read_csv("data/Jobs.csv")
+participants <- read_csv("data/Participants.csv")
+employers <- read_csv("data/Employers.csv")
+
+```
+
+## Employment Patterns
+
+The analysis is based on employer level: the distribution of employers on map, Which employers have more jobs, which employers require higher education level, which employers provide higher salary etc.
+
+### Data Preparetion
+
+Firstly, we join table employers and jobs by key "employerId".
+
+```{r}
+joined_table <- jobs %>%
+  left_join(y=employers, by = c("employerId" = "employerId"))
+```
+
+group_table <-
+
+### Education Requirement
+```{r}
+ggplot(data=joined_table,
+aes(x=educationRequirement)) +
+geom_bar() 
+
+```
+
+### Hourly Rate
+
+```{r}
+ggplot(data=joined_table,
+aes(x= hourlyRate)) +
+geom_histogram(bins=20,
+color="black"
+,
+fill="light blue")
+```
+

@@ -1,0 +1,21 @@
+{
+  "articles": [
+    {
+      "path": "about.html",
+      "title": "About this website",
+      "description": "This website is created and used for *ISSS608 Visual Analysis* taught by **Prof** **Kam** *(SMU SCIS)*. Feel free to apply for *MITB* program and join in this class if you find it is fun after browsing my website!",
+      "author": [],
+      "contents": "\r\n\r\n\r\n\r\n",
+      "last_modified": "2022-05-07T18:34:18+08:00"
+    },
+    {
+      "path": "index.html",
+      "title": "Visual Analysis",
+      "description": "Welcome to Jessie's website of Visual Analysis Course. You can witness how Jessie's growing up in the field of data visualization with all assignments of this course here. I hope you enjoy it!\n",
+      "author": [],
+      "contents": "\r\n\r\n\r\n\r\n",
+      "last_modified": "2022-05-07T18:34:38+08:00"
+    }
+  ],
+  "collections": []
+}

@@ -18,13 +18,15 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Task Overview: The Health of Employers
+## Task Overview
 
 In this take-home exercise, static and interactive methods should be used properly to explore the health of employers according to the data gathered from participants in Ohio, USA.
 
 Two main questions are explored:
 
-The distribution of employers, jobs over the areas and buildings; the distribution of education requirement, average salary and working hours per week etc.
+1. The health of employers: The distribution of jobs and education requirement.
+
+2. The prosperity of business: The population of visitors throughout the study period.
 
 
 ## Getting Started
@@ -39,7 +41,7 @@ packages <- c('ggiraph', 'plotly',
              'gganimate', 'tidyverse',
              'readxl', 'gifski', 'gapminder',
              'treemap', 'treemapify',
-             'rPackedBar')
+             'rPackedBar', 'lubridate')
 
 for (p in packages){
   if (!require(p,character.only=T)){
@@ -53,8 +55,8 @@ for (p in packages){
 
 ```{r message=FALSE, warning=FALSE}
 jobs <- read_csv("data/Jobs.csv")
-participants <- read_csv("data/Participants.csv")
 employers <- read_csv("data/Employers.csv")
+CheckinJournal <- read_csv("data/CheckinJournal.csv")
 
 ```
 
@@ -69,26 +71,132 @@ Firstly, we join table employers and jobs by key "employerId".
 ```{r}
 joined_table <- jobs %>%
   left_join(y=employers, by = c("employerId" = "employerId"))
+
+joined_table_only10 <- joined_table[!(joined_table$hourlyRate>=11),]
+joined_table_without10 <- joined_table[!(joined_table$hourlyRate<11),]
 ```
 
-group_table <-
-
 ### Education Requirement
+
+The histogram shows us the distribution of jobs with different education requirement.
+
 ```{r}
 ggplot(data=joined_table,
 aes(x=educationRequirement)) +
-geom_bar() 
+geom_bar() +
+  ylab("Jobs") +
+  theme(axis.title.y=element_text(angle = 0))
 
 ```
 
-### Hourly Rate
+### Hourly Rate (>11) showing employerId and buildingId
+
+The number of jobs with hourly rate = 10 is too large and cannot be included in the following graph. Thus, the following two graph ignores the jobs with hourly rate = 10 and these jobs will be evaluated individually next.
 
 ```{r}
-ggplot(data=joined_table,
-aes(x= hourlyRate)) +
-geom_histogram(bins=20,
-color="black"
-,
-fill="light blue")
+tooltip_css <- "background-color:white;
+font-style:bold; color:black;"
+
+joined_table_without10$tooltip <- c(paste0(
+  "Building ID = ", joined_table_without10$buildingId,
+  "\n Employer ID = ", joined_table_without10$employerId))
+p <- ggplot(data=joined_table_without10, 
+       aes(x = hourlyRate)) +
+  geom_dotplot_interactive(
+    aes(tooltip = joined_table_without10$tooltip),
+    stackgroups = TRUE,
+    binwidth = 0.8,
+    method = "histodot") +
+  coord_cartesian(xlim=c(10,100)) +
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+girafe(
+  ggobj = p,
+  width_svg = 6,
+  height_svg = 4,
+  options = list(
+    opts_tooltip(
+      css = tooltip_css))
+)
 ```
 
+### Hourly Rate (>11) with different educational requirement
+
+```{r}
+p <- ggplot(data=joined_table_without10, 
+       aes(x = hourlyRate)) +
+  geom_dotplot_interactive(              
+    aes(tooltip = educationRequirement,
+        data_id = educationRequirement),
+    stackgroups = TRUE,                  
+    binwidth = 0.8,                        
+    method = "histodot") +               
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+girafe(                                  
+  ggobj = p,                             
+  width_svg = 6,                         
+  height_svg = 4,
+  options = list(                        
+    opts_hover(css = "fill: #202020;"),  
+    opts_hover_inv(css = "opacity:0.2;") 
+  )                                        
+)
+```
+### Hourly Rate (=10)
+
+```{r}
+ggplot(data=joined_table_only10,
+aes(x=educationRequirement)) +
+geom_bar() +
+  ylab("Jobs") +
+  theme(axis.title.y=element_text(angle = 0))
+```
+
+## The prosperity of business \n(Pubs & Restaurants)
+
+### Data Preparation
+First, from CheckinJournal.csv, we extract Pubs and Restaurants.
+
+Then, we generate the day counted from the start date of gathering this dataset (2022-3-1) and month (1st-15th).
+
+Then, we rotate Pubs and Restaurants into columns and calculate population of people check in pubs and restaurants respectively and the population of people in total.
+
+```{r}
+CheckinJournal_buz <- CheckinJournal[(CheckinJournal$venueType=='Pub'| CheckinJournal$venueType=='Restaurant'),]
+
+CheckinJournal_buz$yday <-yday(CheckinJournal_buz$timestamp-59)
+CheckinJournal_buz <- subset(CheckinJournal_buz, select = -c(timestamp,venueId) )
+CheckinJournal_buz_gb <- CheckinJournal_buz %>% group_by(yday, venueType) %>% summarise(population = n())
+
+CheckinJournal_buz_gb_1 <- CheckinJournal_buz_gb %>%
+  mutate(i = row_number()) %>%
+  spread(venueType, population) %>%
+  select(-i)
+
+CheckinJournal_buz_gb_1[is.na(CheckinJournal_buz_gb_1)] <- 0
+CheckinJournal_buz_gb_final <- CheckinJournal_buz_gb_1 %>%
+  group_by(yday) %>% 
+  summarise(Pub=sum(Pub),Restaurant=sum(Restaurant))%>% 
+  mutate(Population=Pub + Restaurant )
+CheckinJournal_buz_gb_final$month <- cut(CheckinJournal_buz_gb_final$yday, 
+breaks = c(0,31,61,92,123,154,184,                              215,245,276,307,335,366,396,421,500),
+labels=c('1st','2nd','3rd','4th','5th','6th','7th','8th','9th',  '10th','11th','12th','13th','14th','15th'))
+head(CheckinJournal_buz_gb_final)
+```
+
+### Population of Pubs vs Restaurants in each months
+
+Noted, the No. of days means the day from 2022-3-1, and the month 1st = March.
+
+```{r}
+plot_ly(data = CheckinJournal_buz_gb_final, 
+        x = ~Pub, 
+        y = ~Restaurant,
+        text = ~paste("No. of days:", yday),
+        color = ~month, 
+        colors = "Set1")%>%
+  layout(title = 'Population of Pubs vs Restaurants ',
+         xaxis = list(range = c(0, 5800)),
+         yaxis = list(range = c(500, 2700)))
+```

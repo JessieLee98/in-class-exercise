@@ -2502,6 +2502,9 @@ distill-header .nav a {
 <h3>Contents</h3>
 <ul>
 <li><a href="#task-overview">Task Overview</a></li>
+<li><a href="#install-and-launch-packages">Install and Launch
+Packages</a></li>
+<li><a href="#data-preparation">Data Preparation</a></li>
 <li><a href="#participant-1">Participant 1</a></li>
 <li><a href="#participant-2">Participant 2</a></li>
 </ul>
@@ -2511,6 +2514,21 @@ distill-header .nav a {
 <p>The main purpose of this take-home exercise is to use ViSiElse and
 other proper R packages to visualise and analyse the daily pattern of
 two selected participants.</p>
+<h2 id="install-and-launch-packages">Install and Launch Packages</h2>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">packages</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&#39;scales&#39;</span>,<span class="st">&#39;viridis&#39;</span>,<span class="st">&#39;lubridate&#39;</span>,<span class="st">&#39;ggthemes&#39;</span>,<span class="st">&#39;gridExtra&#39;</span>,
+             <span class="st">&#39;tidyverse&#39;</span>,<span class="st">&#39;readxl&#39;</span>,<span class="st">&#39;knitr&#39;</span>,<span class="st">&#39;data.table&#39;</span>,<span class="st">&#39;ViSiElse&#39;</span><span class="op">)</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">p</span> <span class="kw">in</span> <span class="va">packages</span><span class="op">)</span><span class="op">{</span>
+  <span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">p</span>, character.only <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>
+  <span class="op">}</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">p</span>,character.only <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
+<span class="op">}</span>
+</code></pre>
+</div>
+</div>
+<h2 id="data-preparation">Data Preparation</h2>
 <h2 id="participant-1">Participant 1</h2>
 <h2 id="participant-2">Participant 2</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>

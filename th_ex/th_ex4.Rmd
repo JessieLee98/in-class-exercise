@@ -21,6 +21,23 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Task Overview
 The main purpose of this take-home exercise is to use ViSiElse and other proper R packages to visualise and analyse the daily pattern of two selected participants.
 
+## Install and Launch Packages
+
+```{r}
+packages = c('scales','viridis','lubridate','ggthemes','gridExtra',
+             'tidyverse','readxl','knitr','data.table','ViSiElse')
+for (p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  library(p,character.only = T)
+}
+```
+
+## Data Preparation
+
+
+
 ## Participant 1
 
 ## Participant 2

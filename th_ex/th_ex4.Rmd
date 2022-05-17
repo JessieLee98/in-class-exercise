@@ -1,0 +1,26 @@
+---
+title: "Take-home Exercise 4"
+description: |
+  Visualising and Analysing Daily Routines
+author:
+  - name: LI HONGYI 
+    url: 
+    affiliation: SMU SCIS
+    affiliation_url: https://scis.smu.edu.sg
+date: "`r Sys.Date()`"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task Overview
+The main purpose of this take-home exercise is to use ViSiElse and other proper R packages to visualise and analyse the daily pattern of two selected participants.
+
+## Participant 1
+
+## Participant 2

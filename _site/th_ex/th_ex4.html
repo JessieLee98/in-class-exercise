@@ -93,8 +93,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--  https://schema.org/Article -->
-  <meta property="article:published" itemprop="datePublished" content="2022-05-17" />
-  <meta property="article:created" itemprop="dateCreated" content="2022-05-17" />
+  <meta property="article:published" itemprop="datePublished" content="2022-05-19" />
+  <meta property="article:created" itemprop="dateCreated" content="2022-05-19" />
   <meta name="article:author" content="LI HONGYI" />
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
@@ -112,7 +112,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Take-home Exercise 4"]},{"type":"character","attributes":{},"value":["Visualising and Analysing Daily Routines\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url","affiliation","affiliation_url"]}},"value":[{"type":"character","attributes":{},"value":["LI HONGYI"]},{"type":"NULL"},{"type":"character","attributes":{},"value":["SMU SCIS"]},{"type":"character","attributes":{},"value":["https://scis.smu.edu.sg"]}]}]},{"type":"character","attributes":{},"value":["2022-05-17"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[2]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Take-home Exercise 4"]},{"type":"character","attributes":{},"value":["Visualising and Analysing Daily Routines\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url","affiliation","affiliation_url"]}},"value":[{"type":"character","attributes":{},"value":["LI HONGYI"]},{"type":"NULL"},{"type":"character","attributes":{},"value":["SMU SCIS"]},{"type":"character","attributes":{},"value":["https://scis.smu.edu.sg"]}]}]},{"type":"character","attributes":{},"value":["2022-05-19"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[2]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -2474,7 +2474,7 @@ distill-header .nav a {
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Take-home Exercise 4","description":"Visualising and Analysing Daily Routines","authors":[{"author":"LI HONGYI","authorURL":"#","affiliation":"SMU SCIS","affiliationURL":"https://scis.smu.edu.sg","orcidID":""}],"publishedDate":"2022-05-17T00:00:00.000+08:00","citationText":"HONGYI, 2022"}
+{"title":"Take-home Exercise 4","description":"Visualising and Analysing Daily Routines","authors":[{"author":"LI HONGYI","authorURL":"#","affiliation":"SMU SCIS","affiliationURL":"https://scis.smu.edu.sg","orcidID":""}],"publishedDate":"2022-05-19T00:00:00.000+08:00","citationText":"HONGYI, 2022"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2493,7 +2493,7 @@ distill-header .nav a {
 <div class="d-byline">
   LI HONGYI  (SMU SCIS)<a href="https://scis.smu.edu.sg" class="uri">https://scis.smu.edu.sg</a>
   
-<br />2022-05-17
+<br />2022-05-19
 </div>
 
 <div class="d-article">
@@ -2505,8 +2505,8 @@ distill-header .nav a {
 <li><a href="#install-and-launch-packages">Install and Launch
 Packages</a></li>
 <li><a href="#data-preparation">Data Preparation</a></li>
-<li><a href="#participant-1">Participant 1</a></li>
-<li><a href="#participant-2">Participant 2</a></li>
+<li><a href="#visualisation-with-visielse">Visualisation with
+visielse</a></li>
 </ul>
 </nav>
 </div>
@@ -2517,8 +2517,9 @@ two selected participants.</p>
 <h2 id="install-and-launch-packages">Install and Launch Packages</h2>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class="va">packages</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&#39;scales&#39;</span>,<span class="st">&#39;viridis&#39;</span>,<span class="st">&#39;lubridate&#39;</span>,<span class="st">&#39;ggthemes&#39;</span>,<span class="st">&#39;gridExtra&#39;</span>,
-             <span class="st">&#39;tidyverse&#39;</span>,<span class="st">&#39;readxl&#39;</span>,<span class="st">&#39;knitr&#39;</span>,<span class="st">&#39;data.table&#39;</span>,<span class="st">&#39;ViSiElse&#39;</span><span class="op">)</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">packages</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&#39;scales&#39;</span>,<span class="st">&#39;viridis&#39;</span>,<span class="st">&#39;lubridate&#39;</span>,<span class="st">&#39;ggthemes&#39;</span>,
+             <span class="st">&#39;gridExtra&#39;</span>,<span class="st">&#39;tidyverse&#39;</span>,<span class="st">&#39;readxl&#39;</span>,<span class="st">&#39;knitr&#39;</span>,
+             <span class="st">&#39;data.table&#39;</span>,<span class="st">&#39;ViSiElse&#39;</span><span class="op">)</span>
 <span class="kw">for</span> <span class="op">(</span><span class="va">p</span> <span class="kw">in</span> <span class="va">packages</span><span class="op">)</span><span class="op">{</span>
   <span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">p</span>, character.only <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">{</span>
     <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>
@@ -2529,9 +2530,186 @@ two selected participants.</p>
 </div>
 </div>
 <h2 id="data-preparation">Data Preparation</h2>
-<h2 id="participant-1">Participant 1</h2>
-<h2 id="participant-2">Participant 2</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<h3 id="import-multiple-files">Import Multiple Files</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">logs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">&quot;./data/ActivityLogs/&quot;</span>,
+                   pattern <span class="op">=</span> <span class="st">&quot;*.csv&quot;</span>, 
+                   full.names <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">map_df</span><span class="op">(</span><span class="op">~</span><span class="fu">read_csv</span><span class="op">(</span><span class="va">.</span>, 
+                   col_types <span class="op">=</span> <span class="fu">cols</span><span class="op">(</span>.default <span class="op">=</span> <span class="st">&quot;c&quot;</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> 
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">logs</span> <span class="op">&lt;-</span> <span class="va">logs</span><span class="op">[</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span> <span class="op">]</span>
+</code></pre>
+</div>
+</div>
+<p>Extract logs of participant 10.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">logs</span> <span class="op">&lt;-</span> <span class="va">logs</span><span class="op">[</span><span class="va">logs</span><span class="op">$</span><span class="va">participantId</span> <span class="op">==</span> <span class="st">&#39;10&#39;</span>, <span class="op">]</span>
+<span class="va">logs_10</span> <span class="op">&lt;-</span> <span class="va">logs</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">]</span>
+</code></pre>
+</div>
+</div>
+<p>Extract day from timestamp using lubridate package.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">logs_10</span><span class="op">$</span><span class="va">day</span> <span class="op">&lt;-</span><span class="fu">day</span><span class="op">(</span><span class="va">logs_10</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span>
+</code></pre>
+</div>
+</div>
+<p>Calculate time elapse with the start of midnight in minute.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">logs_10_new</span> <span class="op">&lt;-</span><span class="va">logs_10</span> <span class="op">%&gt;%</span> 
+  <span class="fu">group_by</span><span class="op">(</span><span class="va">day</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">mutate</span><span class="op">(</span>min_time<span class="op">=</span><span class="fu">first</span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">logs_10_new</span><span class="op">$</span><span class="va">timeElapse</span> <span class="op">&lt;-</span> 
+  <span class="fu">interval</span><span class="op">(</span><span class="va">logs_10_new</span><span class="op">$</span><span class="va">min_time</span>, <span class="va">logs_10_new</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span><span class="op">/</span><span class="fu">dminutes</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+
+<span class="va">log_10</span> <span class="op">&lt;-</span> <span class="va">logs_10_new</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">6</span><span class="op">)</span><span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">log_10</span><span class="op">)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 6 x 5
+# Groups:   day [1]
+  currentMode hungerStatus sleepStatus   day timeElapse
+  &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;       &lt;int&gt;      &lt;dbl&gt;
+1 AtHome      JustAte      Sleeping        1          0
+2 AtHome      JustAte      Sleeping        1          5
+3 AtHome      JustAte      Sleeping        1         10
+4 AtHome      JustAte      Sleeping        1         15
+5 AtHome      JustAte      Sleeping        1         20
+6 AtHome      JustAte      Sleeping        1         25</code></pre>
+</div>
+<p>Create separate logs of different types of activities: current mode,
+hunger status, and sleep status.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">log_10_currentMode</span> <span class="op">&lt;-</span> <span class="va">log_10</span> <span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">]</span>
+<span class="va">log_10_hungerStatus</span> <span class="op">&lt;-</span> <span class="va">log_10</span> <span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">]</span>
+<span class="va">log_10_sleepStatus</span> <span class="op">&lt;-</span> <span class="va">log_10</span> <span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">log_10_currentMode</span> <span class="op">&lt;-</span><span class="va">log_10_currentMode</span> <span class="op">%&gt;%</span>
+  <span class="fu">group_by</span><span class="op">(</span><span class="va">day</span>,<span class="va">currentMode</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="fu">row_number</span><span class="op">(</span><span class="op">)</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span>
+</code></pre>
+</div>
+</div>
+<p>As for hunger status table, using group by, cut, filter to extract
+time for breakfast, lunch and dinner.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">log_10_hungerStatus</span> <span class="op">&lt;-</span><span class="va">log_10_hungerStatus</span> <span class="op">%&gt;%</span>
+  <span class="fu">group_by</span><span class="op">(</span><span class="va">day</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">hungerStatus</span><span class="op">==</span><span class="st">&#39;JustAte&#39;</span><span class="op">)</span>
+ 
+<span class="va">log_10_hungerStatus</span><span class="op">$</span><span class="va">meal</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span><span class="op">(</span>
+  <span class="va">log_10_hungerStatus</span><span class="op">$</span><span class="va">timeElapse</span>, 
+  breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">500</span>, <span class="fl">900</span>, <span class="cn">Inf</span><span class="op">)</span>,
+  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&quot;EatBreakfast&quot;</span>, <span class="st">&quot;EatLunch&quot;</span>, <span class="st">&quot;EatDinner&quot;</span><span class="op">)</span><span class="op">)</span> 
+
+<span class="va">log_10_hungerStatus</span> <span class="op">&lt;-</span><span class="va">log_10_hungerStatus</span> <span class="op">%&gt;%</span>
+  <span class="fu">group_by</span><span class="op">(</span><span class="va">day</span>, <span class="va">meal</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="fu">row_number</span><span class="op">(</span><span class="op">)</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span>
+
+<span class="va">log_10_hungerStatus</span><span class="op">&lt;-</span><span class="va">log_10_hungerStatus</span> <span class="op">%&gt;%</span> <span class="fu">drop_na</span><span class="op">(</span><span class="va">meal</span><span class="op">)</span>
+<span class="va">log_10_hungerStatus</span><span class="op">&lt;-</span><span class="va">log_10_hungerStatus</span> <span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">log_10_hungerStatus</span><span class="op">)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 6 x 3
+# Groups:   day, meal [6]
+    day timeElapse meal        
+  &lt;int&gt;      &lt;dbl&gt; &lt;fct&gt;       
+1     1        395 EatBreakfast
+2     1        815 EatLunch    
+3     1       1240 EatDinner   
+4     2        390 EatBreakfast
+5     2        810 EatLunch    
+6     2       1240 EatDinner   </code></pre>
+</div>
+<p>As for sleep status log, extract time for go to sleep, sleep and wake
+up.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">log_10_sleepStatus</span> <span class="op">&lt;-</span><span class="va">log_10_sleepStatus</span> <span class="op">%&gt;%</span>
+  <span class="fu">group_by</span><span class="op">(</span><span class="va">day</span>,<span class="va">sleepStatus</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="fu">row_number</span><span class="op">(</span><span class="op">)</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span>
+
+<span class="va">log_10_sleepStatus</span><span class="op">$</span><span class="va">sleepStatus</span><span class="op">[</span><span class="va">log_10_sleepStatus</span><span class="op">$</span><span class="va">sleepStatus</span><span class="op">==</span><span class="st">&quot;Awake&quot;</span><span class="op">]</span><span class="op">&lt;-</span><span class="st">&quot;Wakeup&quot;</span>
+<span class="va">log_10_sleepStatus</span><span class="op">$</span><span class="va">sleepStatus</span><span class="op">[</span><span class="va">log_10_sleepStatus</span><span class="op">$</span><span class="va">sleepStatus</span><span class="op">==</span><span class="st">&quot;Sleeping&quot;</span><span class="op">]</span><span class="op">&lt;-</span><span class="st">&quot;GoToSleep&quot;</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">log_10_sleepStatus</span><span class="op">)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 6 x 3
+# Groups:   day, sleepStatus [6]
+  sleepStatus      day timeElapse
+  &lt;chr&gt;          &lt;int&gt;      &lt;dbl&gt;
+1 GoToSleep          1          0
+2 Wakeup             1        390
+3 PrepareToSleep     1       1290
+4 GoToSleep          2          0
+5 Wakeup             2        390
+6 PrepareToSleep     2       1290</code></pre>
+</div>
+<p>Join two tables together with proper structure for visualization.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://docs.ropensci.org/writexl/">&quot;writexl&quot;</a></span><span class="op">)</span>
+
+<span class="fu"><a href="https://docs.ropensci.org/writexl/reference/write_xlsx.html">write_xlsx</a></span><span class="op">(</span><span class="va">log_10_sleepStatus</span>,<span class="st">&quot;D:\\JessieLee\\in-class-exercise\\th_ex\\data\\sleepStatus.xlsx&quot;</span><span class="op">)</span>
+<span class="fu"><a href="https://docs.ropensci.org/writexl/reference/write_xlsx.html">write_xlsx</a></span><span class="op">(</span><span class="va">log_10_hungerStatus</span>,<span class="st">&quot;D:\\JessieLee\\in-class-exercise\\th_ex\\data\\hungerStatus.xlsx&quot;</span><span class="op">)</span>
+
+<span class="va">Status</span> <span class="op">&lt;-</span> <span class="fu">read_csv</span><span class="op">(</span><span class="st">&quot;data/Status.csv&quot;</span><span class="op">)</span>
+<span class="va">new_status</span> <span class="op">&lt;-</span> <span class="fu">read_csv</span><span class="op">(</span><span class="st">&quot;data/new_status.csv&quot;</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">new_status</span><span class="op">)</span>
+</code></pre>
+</div>
+<pre><code># A tibble: 6 x 7
+    Day GoToSleep Wakeup EatBreakfast EatLunch EatDinner
+  &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;        &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+1     1         0    390          395      815      1240
+2     2         0    390          390      810      1240
+3     3         0    390          390      810      1235
+4     4         0    390          390      810      1235
+5     5         0    390          440      885       905
+6     6         0    390          440      885       905
+# ... with 1 more variable: PrepareToSleep &lt;dbl&gt;</code></pre>
+</div>
+<h2 id="visualisation-with-visielse">Visualisation with visielse</h2>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">visielse</span><span class="op">(</span><span class="va">new_status</span>, informer <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
+</code></pre>
+</div>
+<img src="data:image/png;base64,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" width="624" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">b1</span> <span class="op">&lt;-</span> <span class="fu">ConvertFromViSibook</span><span class="op">(</span><span class="va">p1</span><span class="op">@</span><span class="va">book</span><span class="op">)</span>
+</code></pre>
+</div>
+</div>
+<p>Create ViSibook for further visualization.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">b1</span> <span class="op">&lt;-</span> <span class="va">b1</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">b1</span><span class="op">$</span><span class="va">showorder</span><span class="op">)</span><span class="op">)</span>, <span class="op">]</span> <span class="co"># order the data.frame</span>
+<span class="va">b1</span><span class="op">$</span><span class="va">label</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&quot;Sleep&quot;</span>,<span class="st">&quot;Wake up&quot;</span>, <span class="st">&quot;Eat breakfast&quot;</span>,<span class="st">&quot;Eat lunch&quot;</span>,<span class="st">&quot;Eat dinner&quot;</span>,<span class="st">&quot;Go to sleep&quot;</span><span class="op">)</span>
+<span class="va">b1</span><span class="op">[</span><span class="fl">7</span>,<span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&quot;Sleep&quot;</span>,<span class="st">&quot;Sleeping&quot;</span>,<span class="st">&quot;l&quot;</span>, <span class="fl">1</span>,<span class="st">&quot;GoToSleep&quot;</span>,<span class="st">&quot;Wakeup&quot;</span><span class="op">)</span>
+<span class="va">b1</span><span class="op">$</span><span class="va">showorder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="cn">NA</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">5</span>,<span class="fl">6</span>,<span class="fl">1</span><span class="op">)</span>
+<span class="va">b1</span> <span class="op">&lt;-</span> <span class="va">b1</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">b1</span><span class="op">$</span><span class="va">showorder</span><span class="op">)</span><span class="op">)</span>, <span class="op">]</span>
+</code></pre>
+</div>
+</div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

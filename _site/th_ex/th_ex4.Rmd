@@ -24,8 +24,9 @@ The main purpose of this take-home exercise is to use ViSiElse and other proper 
 ## Install and Launch Packages
 
 ```{r}
-packages = c('scales','viridis','lubridate','ggthemes','gridExtra',
-             'tidyverse','readxl','knitr','data.table','ViSiElse')
+packages = c('scales','viridis','lubridate','ggthemes',
+             'gridExtra','tidyverse','readxl','knitr',
+             'data.table','ViSiElse')
 for (p in packages){
   if(!require(p, character.only = T)){
     install.packages(p)
@@ -36,8 +37,129 @@ for (p in packages){
 
 ## Data Preparation
 
+### Import Multiple Files
 
+```{r}
+logs <- list.files(path = "./data/ActivityLogs/",
+                   pattern = "*.csv", 
+                   full.names = T) %>% 
+  map_df(~read_csv(., 
+                   col_types = cols(.default = "c"))) 
+```
 
-## Participant 1
+```{r}
+logs <- logs[ -c(2,7:12) ]
+```
 
-## Participant 2
+Extract logs of participant 10.
+
+```{r}
+logs <- logs[logs$participantId == '10', ]
+logs_10 <- logs[-c(2)]
+```
+
+Extract day from timestamp using lubridate package.
+
+```{r}
+logs_10$day <-day(logs_10$timestamp)
+
+```
+
+Calculate time elapse with the start of midnight in minute.
+
+```{r}
+logs_10_new <-logs_10 %>% 
+  group_by(day) %>% 
+  mutate(min_time=first(timestamp))
+
+logs_10_new$timeElapse <- 
+  interval(logs_10_new$min_time, logs_10_new$timestamp)/dminutes(1)
+
+log_10 <- logs_10_new[-c(1,6)]
+head(log_10)
+```
+
+Create separate logs of different types of activities: current mode, hunger status, and sleep status.
+
+```{r}
+log_10_currentMode <- log_10 [-c(2,3)]
+log_10_hungerStatus <- log_10 [-c(1,3)]
+log_10_sleepStatus <- log_10 [-c(1,2)]
+```
+
+```{r}
+log_10_currentMode <-log_10_currentMode %>%
+  group_by(day,currentMode) %>%
+  filter(row_number()==1)
+```
+
+As for hunger status table, using group by, cut, filter to extract time for breakfast, lunch and dinner.
+
+```{r}
+log_10_hungerStatus <-log_10_hungerStatus %>%
+  group_by(day) %>%
+  filter(hungerStatus=='JustAte')
+ 
+log_10_hungerStatus$meal <-cut(
+  log_10_hungerStatus$timeElapse, 
+  breaks = c(100, 500, 900, Inf),
+  labels = c("EatBreakfast", "EatLunch", "EatDinner")) 
+
+log_10_hungerStatus <-log_10_hungerStatus %>%
+  group_by(day, meal) %>%
+  filter(row_number()==1)
+
+log_10_hungerStatus<-log_10_hungerStatus %>% drop_na(meal)
+log_10_hungerStatus<-log_10_hungerStatus [-c(1)]
+head(log_10_hungerStatus)
+```
+
+As for sleep status log, extract time for go to sleep, sleep and wake up.
+
+```{r}
+log_10_sleepStatus <-log_10_sleepStatus %>%
+  group_by(day,sleepStatus) %>%
+  filter(row_number()==1)
+
+log_10_sleepStatus$sleepStatus[log_10_sleepStatus$sleepStatus=="Awake"]<-"Wakeup"
+log_10_sleepStatus$sleepStatus[log_10_sleepStatus$sleepStatus=="Sleeping"]<-"GoToSleep"
+head(log_10_sleepStatus)
+
+```
+
+Join two tables together with proper structure for visualization.
+
+```{r}
+library("writexl")
+
+write_xlsx(log_10_sleepStatus,"D:\\JessieLee\\in-class-exercise\\th_ex\\data\\sleepStatus.xlsx")
+write_xlsx(log_10_hungerStatus,"D:\\JessieLee\\in-class-exercise\\th_ex\\data\\hungerStatus.xlsx")
+
+Status <- read_csv("data/Status.csv")
+new_status <- read_csv("data/new_status.csv")
+head(new_status)
+```
+
+## Visualisation with visielse
+
+```{r}
+p1 <- visielse(new_status, informer = NULL)
+b1 <- ConvertFromViSibook(p1@book)
+
+```
+Create ViSibook for further visualization.
+
+```{r}
+b1 <- b1[order(as.numeric(b1$showorder)), ] # order the data.frame
+b1$label <- c("Sleep","Wake up", "Eat breakfast","Eat lunch","Eat dinner","Go to sleep")
+b1[7,] <- c("Sleep","Sleeping","l", 1,"GoToSleep","Wakeup")
+b1$showorder <- c(NA,NA,3,4,5,6,1)
+b1 <- b1[order(as.numeric(b1$showorder)), ]
+```
+
+```{r eval=FALSE, include=FALSE}
+v2 <- visielse(new_status, book = b1,
+               informer = NULL, doplot = F,
+               pixel = 30)
+plot(v2, main = "Eating and Sleeping Schedual of Participant 10")
+```

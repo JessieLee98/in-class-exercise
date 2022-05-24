@@ -17,17 +17,8 @@ navbar:
         href: "th_ex/th_ex4.html"
       - text: "Take-home Exercise 5"
         href: ""
-    - text: "DataViz Makeover"
-      menu:
-      - text: "DataViz Makeover 1"
+      - text: "Take-home Exercise 6"
         href: ""
-      - text: "DataViz Makeover 2"
-        href: ""
-  right:
-    - text: "Home"
-      href: index.html
-    - text: "About"
-      href: about.html
     - text: "In-class Exercise"
       menu:
       - text: "In-class Exercise 4"
@@ -36,6 +27,14 @@ navbar:
         href: "ic_ex/in-class_ex5.html"
       - text: "In-class Exercise 6"
         href: "ic_ex/in-class_ex6.html"
+      - text: "In-class Exercise 7"
+        href: "ic_ex/in-class_ex7.html"
+  right:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
+    
   
   
 output: distill::distill_article

@@ -1,0 +1,54 @@
+---
+title: "Take-home Exercise 5"
+description: |
+  GeoVisual Analysis: Social Areas and Traffic Bottleneck
+author:
+  - name: LI HONGYI 
+    url: 
+    affiliation: SMU SCIS
+    affiliation_url: https://scis.smu.edu.sg
+date: "`r Sys.Date()`"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### install packages
+
+```{r}
+packages = c('sf','tmap','tidyverse','lubridate',
+             'clock', 'sftime', 'rmarkdown')
+for (p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  library(p,character.only = T)
+}
+```
+
+### import data
+
+```{r}
+schools <- read_sf("data/wkt/Schools.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+Pubs <- read_sf("data/wkt/Pubs.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+Apartments <- read_sf("data/wkt/Apartments.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+Buildings <- read_sf("data/wkt/Buildings.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+Employers <- read_sf("data/wkt/Employers.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+Restaurants <- read_sf("data/wkt/Restaurants.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+```

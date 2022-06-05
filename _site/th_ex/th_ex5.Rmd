@@ -1,0 +1,183 @@
+---
+title: "Take-home Exercise 5"
+description: |
+  GeoVisual Analysis: Social Areas and Traffic Bottleneck
+author:
+  - name: LI HONGYI 
+    url: 
+    affiliation: SMU SCIS
+    affiliation_url: https://scis.smu.edu.sg
+date: "`r Sys.Date()`"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+
+In this take-home exercise, we have two main tasks: 1) characterize the district areas with distinct features; 2) identify the busiest areas and traffic bottlenecks
+
+## install packages
+
+```{r}
+packages = c('sf','tmap','tidyverse','lubridate',
+             'clock', 'sftime', 'rmarkdown')
+for (p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  library(p,character.only = T)
+}
+```
+
+## import data
+
+```{r}
+schools <- read_sf("data/wkt/Schools.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+Pubs <- read_sf("data/wkt/Pubs.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+Apartments <- read_sf("data/wkt/Apartments.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+Buildings <- read_sf("data/wkt/Buildings.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+Employers <- read_sf("data/wkt/Employers.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+Restaurants <- read_sf("data/wkt/Restaurants.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+```
+
+## visualise location of the attributes and characterize the distinct area
+
+### The location of Employers
+```{R, layout = "l-screen-inset"}
+tmap_mode("plot")
+tm_shape(Buildings)+
+tm_polygons(col = "grey80",
+           size = 1,
+           border.col = "black",
+           border.lwd = 1)+
+tm_shape(Employers) +
+  tm_dots(col = "red")
+```
+
+We can divide the whole area into four parts: northwestern, central, eastern, and southern areas. We can see that employers are mainly located in the northwetern and central areas but also spread a lot in other two areas.
+
+### The location of Apartments
+
+```{R, layout = "l-screen-inset"}
+tmap_mode("plot")
+tm_shape(Buildings)+
+tm_polygons(col = "grey80",
+           size = 1,
+           border.col = "black",
+           border.lwd = 1)+
+tm_shape(Apartments) +
+  tm_dots(col = "yellow")
+```
+
+We can see that similar to the distribution of employers, apartments are also mainly located in  northeastern and central areas. 
+
+### The location of Pubs, Restaurants and Schools
+
+```{R, layout = "l-screen-inset"}
+tmap_mode("plot")
+tm_shape(Buildings)+
+tm_polygons(col = "grey80",
+           size = 1,
+           border.col = "black",
+           border.lwd = 1)+
+tm_shape(Pubs) +
+  tm_dots(col = "blue", size = 0.05)+
+tm_shape(Restaurants) +
+  tm_dots(col = "green", size = 0.05)+
+tm_shape(schools) +
+  tm_dots(col = "purple", size = 0.05)
+```
+
+Similar to the distribution of employers and apartments, pubs, restaurants and schools are mainly located in northwestern and central areas. More specifically, there are two schools in northwestern area but no school in eastern area.
+
+### The Detailed Location of all Attributes
+
+```{r, layout = "l-screen-inset", fig.width=10, fig.height=10}
+tmap_mode("view")
+tm_shape(Buildings)+
+tm_polygons(col = "grey90",
+           size = 1,
+           border.col = "black",
+           border.lwd = 1)+
+tm_shape(Employers) +
+  tm_dots(col = "red")+
+tm_shape(Apartments) +
+  tm_dots(col = "yellow")+
+tm_shape(Pubs) +
+  tm_dots(col = "blue")+
+tm_shape(Restaurants) +
+  tm_dots(col = "green")+
+tm_shape(schools) +
+  tm_dots(col = "purple")
+```
+
+With this interactive graph, we can zoom in and out to see the overall distribution as well as the detailed information of each attributes. 
+
+We can find some trends:
+
+1. In each area, we can see very clearly that apartments are gathered in certain areas which are a bit separated from the working office. This trend is clearest in central area, with working office in the center surrounding by residential buildings.
+
+2. Pubs and restaurants are usually near to the working office, while schools are more isolated in the edge of the area.
+
+## import multiple participant status log
+
+```{r eval=FALSE, include=FALSE}
+logs <- list.files(path = "./data/ActivityLogs/",
+                   pattern = "*.csv", 
+                   full.names = T) %>% 
+  map_df(~read_csv(., 
+                   col_types = cols(.default = "c")))
+
+```
+
+```{r eval=FALSE, include=FALSE}
+logs <- read_sf("data/rds/logs.csv", 
+                options = "GEOM_POSSIBLE_NAMES=currentLocation")
+```
+
+```{r eval=FALSE, include=FALSE}
+logs_selected <- logs %>%
+  mutate(Timestamp = date_time_parse(timestamp,
+                                     zone = "",
+                                     format = "%Y-%m-%dT%H:%M:%S")) %>%
+  mutate(day=get_day(Timestamp)) %>%
+  filter(currentMode == "Transport")
+```
+
+```{r eval=FALSE, include=FALSE}
+write_rds(logs_selected,
+          "data/rds/logs_selected.rds")
+```
+
+```{r}
+logs_selected <- 
+  read_rds("data/rds/logs_selected.rds")
+```
+
+```{r, layout = "l-screen-inset"}
+tmap_mode("plot")
+tm_shape(Buildings)+
+tm_polygons(col = "grey60",
+           size = 1,
+           border.col = "black",
+           border.lwd = 1)+
+tm_shape(logs_selected) +
+  tm_dots(col = "red")
+```

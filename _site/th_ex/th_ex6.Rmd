@@ -1,0 +1,142 @@
+---
+title: "Take-home Exercise 6"
+description: |
+  Network Analysis
+author:
+  - name: LI HONGYI 
+    url: 
+    affiliation: SMU SCIS
+    affiliation_url: https://scis.smu.edu.sg
+date: "`r Sys.Date()`"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+
+In this take-home exercise, the main task is to visualize the social network of Ohio, USA.
+
+## install packages
+
+```{r}
+packages = c('igraph','tidygraph','ggraph','visNetwork',
+             'lubridate','clock','tidyverse','graphlayouts')
+for (p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  library(p,character.only = T)
+}
+```
+
+## import data
+
+```{r eval=FALSE, include=FALSE}
+nodes <- read_csv("data/Participants.csv")
+edges <- read_csv("data/SocialNetwork.csv")
+```
+
+## wrangling attribute
+
+```{r eval=FALSE, include=FALSE}
+nodes <- nodes %>% 
+  select(participantId, educationLevel, interestGroup)
+```
+
+```{r eval=FALSE, include=FALSE}
+edge_aggregated <- edges %>%
+  group_by(participantIdFrom, participantIdTo) %>%
+  summarise(Weight = n()) %>%
+  filter(participantIdFrom != participantIdTo) %>%
+  filter(Weight > 200) %>%
+  ungroup
+```
+
+```{r eval=FALSE, include=FALSE}
+write_rds(edge_aggregated,
+          "data/rds/edge_aggregated.rds")
+write_rds(nodes,
+          "data/rds/nodes.rds")
+```
+
+```{r}
+edge_aggregated <- 
+  read_rds("data/rds/edge_aggregated.rds")
+nodes <- 
+  read_rds("data/rds/nodes.rds")
+```
+
+## Buildling graph model
+
+```{r}
+cgraph <- graph_from_data_frame(edge_aggregated,
+                                vertices = nodes) %>%
+  as_tbl_graph
+cgraph
+```
+
+
+
+```{r,  fig.width=10, fig.height=10}
+ggraph(cgraph,
+       layout = "nicely") +
+  geom_edge_link(aes(width = Weight),
+                 alpha = 0.1) +
+  scale_edge_width(range = c(0.5, 1.5)) + 
+  geom_node_point(
+    aes(colour=interestGroup, size = 1)) +
+  theme_graph()
+
+```
+```{r,  fig.width=10, fig.height=10}
+ggraph(cgraph,
+       layout = "stress") +
+  geom_edge_link(aes(width = Weight),
+                 alpha = 0.1) +
+  scale_edge_width(range = c(0.5, 1.5)) + 
+  geom_node_point(
+    aes(colour=interestGroup, size = 1)) +
+  theme_graph()
+
+```
+
+
+```{r, fig.width=10, fig.height=10}
+set_graph_style()
+
+g<- ggraph(cgraph,
+           layout = "nicely") + 
+  geom_edge_link(aes(width = Weight),
+                 alpha = 0.2) +
+  scale_edge_width(range = c(0.5, 2)) + 
+  geom_node_point(
+    aes(colour=interestGroup), size = 2) 
+ 
+g + facet_nodes(~educationLevel)+ 
+    th_foreground(foreground = "grey80",
+                  border = TRUE)+
+  theme(legend.position = "bottom")
+```
+
+```{r,  fig.width=10, fig.height=10}
+set_graph_style()
+
+g<- ggraph(cgraph,
+           layout = "stress") + 
+  geom_edge_link(aes(width = Weight),
+                 alpha = 0.2) +
+  scale_edge_width(range = c(0.5, 2)) + 
+  geom_node_point(
+    aes(colour=interestGroup), size = 2) 
+ 
+g + facet_nodes(~educationLevel)+ 
+    th_foreground(foreground = "grey80",
+                  border = TRUE)+
+  theme(legend.position = "bottom")
+```

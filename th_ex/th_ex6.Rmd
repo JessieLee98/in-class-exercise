@@ -38,7 +38,7 @@ for (p in packages){
 ## import data
 
 ```{r eval=FALSE, include=FALSE}
-nodes <- read_csv("data/Participants.csv")
+participants <- read_csv("data/Participants.csv")
 edges <- read_csv("data/SocialNetwork.csv")
 ```
 
@@ -90,7 +90,7 @@ cgraph <- graph_from_data_frame(edge_aggregated,
 cgraph
 ```
 ## Ploting the graph
-
+### social network (weight>200, color = interest group)
 ```{r,  fig.width=10, fig.height=10}
 ggraph(cgraph,
        layout = "stress") +
@@ -114,6 +114,7 @@ ggraph(cgraph,
   theme_graph()
 
 ```
+### social network (weight >200, color = education level)
 
 ```{r,  fig.width=10, fig.height=10}
 ggraph(cgraph,
@@ -159,4 +160,121 @@ g + facet_nodes(~interestGroup)+
     th_foreground(foreground = "grey80",
                   border = TRUE)+
   theme(legend.position = "bottom")
+```
+
+## Social Network with more frequent interactivity (>300)
+```{r}
+participants <- 
+  read_rds("data/rds/participants.rds")
+```
+
+```{r}
+edge_aggregated_less <- edge_aggregated %>%
+  filter(Weight > 300)
+
+nodes_less <- edge_aggregated_less %>% 
+  select(participantIdFrom) %>%
+  group_by(participantIdFrom) %>%
+  summarise(Weight = n()) %>%
+  select(participantIdFrom) %>% 
+  rename(participantId = participantIdFrom)
+
+nodes_aggregated_less <- merge(x = nodes_less, y = participants, by = "participantId")
+```
+
+```{r}
+cgraph_less <- graph_from_data_frame(edge_aggregated_less,
+                                vertices = nodes_aggregated_less) %>%
+  as_tbl_graph
+cgraph_less
+```
+
+
+```{r,  fig.width=10, fig.height=10}
+ggraph(cgraph_less,
+       layout = "stress") +
+  geom_edge_link(aes(width = Weight),
+                 alpha = 0.1) +
+  scale_edge_width(range = c(0.5, 1.5)) + 
+  geom_node_point(
+    aes(colour=interestGroup, size = 1)) +
+  theme_graph()
+
+```
+
+```{r,  fig.width=10, fig.height=10}
+ggraph(cgraph_less,
+       layout = "nicely") +
+  geom_edge_link(aes(width = Weight),
+                 alpha = 0.1) +
+  scale_edge_width(range = c(0.5, 1.5)) + 
+  geom_node_point(
+    aes(colour=educationLevel, size = 1)) +
+  theme_graph()
+
+```
+
+```{r,  fig.width=10, fig.height=10}
+set_graph_style()
+
+g<- ggraph(cgraph_less,
+           layout = "nicely") + 
+  geom_edge_link(aes(width = Weight),
+                 alpha = 0.2) +
+  scale_edge_width(range = c(0.5, 2)) + 
+  geom_node_point(
+    aes(colour=interestGroup), size = 2) 
+ 
+g + facet_nodes(~educationLevel)+ 
+    th_foreground(foreground = "grey80",
+                  border = TRUE)+
+  theme(legend.position = "bottom")
+```
+
+## Social Network with more frequent interactivity (>400)
+
+```{r}
+edge_aggregated_least <- edge_aggregated %>%
+  filter(Weight > 400)
+
+nodes_least <- edge_aggregated_least %>% 
+  select(participantIdFrom) %>%
+  group_by(participantIdFrom) %>%
+  summarise(Weight = n()) %>%
+  select(participantIdFrom) %>% 
+  rename(participantId = participantIdFrom)
+
+nodes_aggregated_least <- merge(x = nodes_least, y = participants, by = "participantId")
+```
+
+```{r}
+cgraph_least <- graph_from_data_frame(edge_aggregated_least,
+                                vertices = nodes_aggregated_least) %>%
+  as_tbl_graph
+cgraph_least
+```
+
+
+```{r,  fig.width=10, fig.height=10}
+ggraph(cgraph_least,
+       layout = "stress") +
+  geom_edge_link(aes(width = Weight),
+                 alpha = 0.1) +
+  scale_edge_width(range = c(0.5, 1.5)) + 
+  geom_node_point(
+    aes(colour=interestGroup, size = 1)) +
+  theme_graph()
+
+```
+
+```{r,  fig.width=10, fig.height=10}
+ggraph(cgraph_least,
+       layout = "nicely") +
+  geom_edge_link(aes(width = Weight),
+                 alpha = 0.1) +
+  scale_edge_width(range = c(0.5, 1.5)) + 
+  geom_node_point(
+    aes(colour=interestGroup, size = 1)) +
+  theme_graph()
+
 ```

@@ -45,11 +45,9 @@ edges <- read_csv("data/SocialNetwork.csv")
 ## wrangling attribute
 
 ```{r eval=FALSE, include=FALSE}
-nodes <- nodes %>% 
-  select(participantId, educationLevel, interestGroup)
-```
+participants <- 
+  read_rds("data/rds/participants.rds")
 
-```{r eval=FALSE, include=FALSE}
 edge_aggregated <- edges %>%
   group_by(participantIdFrom, participantIdTo) %>%
   summarise(Weight = n()) %>%
@@ -59,41 +57,40 @@ edge_aggregated <- edges %>%
 ```
 
 ```{r eval=FALSE, include=FALSE}
+nodes <- edge_aggregated %>% 
+  select(participantIdFrom) %>%
+  group_by(participantIdFrom) %>%
+  summarise(Weight = n()) %>%
+  select(participantIdFrom) %>% 
+  rename(participantId = participantIdFrom)
+
+nodes_aggregated <- merge(x = nodes, y = participants, by = "participantId")
+```
+
+```{r eval=FALSE, include=FALSE}
 write_rds(edge_aggregated,
           "data/rds/edge_aggregated.rds")
-write_rds(nodes,
-          "data/rds/nodes.rds")
+write_rds(nodes_aggregated,
+          "data/rds/nodes_aggregated.rds")
 ```
 
 ```{r}
 edge_aggregated <- 
   read_rds("data/rds/edge_aggregated.rds")
-nodes <- 
-  read_rds("data/rds/nodes.rds")
+nodes_aggregated <- 
+  read_rds("data/rds/nodes_aggregated.rds")
 ```
 
 ## Buildling graph model
 
 ```{r}
 cgraph <- graph_from_data_frame(edge_aggregated,
-                                vertices = nodes) %>%
+                                vertices = nodes_aggregated) %>%
   as_tbl_graph
 cgraph
 ```
+## Ploting the graph
 
-
-
-```{r,  fig.width=10, fig.height=10}
-ggraph(cgraph,
-       layout = "nicely") +
-  geom_edge_link(aes(width = Weight),
-                 alpha = 0.1) +
-  scale_edge_width(range = c(0.5, 1.5)) + 
-  geom_node_point(
-    aes(colour=interestGroup, size = 1)) +
-  theme_graph()
-
-```
 ```{r,  fig.width=10, fig.height=10}
 ggraph(cgraph,
        layout = "stress") +
@@ -106,8 +103,31 @@ ggraph(cgraph,
 
 ```
 
+```{r,  fig.width=10, fig.height=10}
+ggraph(cgraph,
+       layout = "nicely") +
+  geom_edge_link(aes(width = Weight),
+                 alpha = 0.1) +
+  scale_edge_width(range = c(0.5, 1.5)) + 
+  geom_node_point(
+    aes(colour=interestGroup, size = 1)) +
+  theme_graph()
 
-```{r, fig.width=10, fig.height=10}
+```
+
+```{r,  fig.width=10, fig.height=10}
+ggraph(cgraph,
+       layout = "nicely") +
+  geom_edge_link(aes(width = Weight),
+                 alpha = 0.1) +
+  scale_edge_width(range = c(0.5, 1.5)) + 
+  geom_node_point(
+    aes(colour=educationLevel, size = 1)) +
+  theme_graph()
+
+```
+
+```{r,  fig.width=10, fig.height=10}
 set_graph_style()
 
 g<- ggraph(cgraph,
@@ -128,14 +148,14 @@ g + facet_nodes(~educationLevel)+
 set_graph_style()
 
 g<- ggraph(cgraph,
-           layout = "stress") + 
+           layout = "nicely") + 
   geom_edge_link(aes(width = Weight),
                  alpha = 0.2) +
   scale_edge_width(range = c(0.5, 2)) + 
   geom_node_point(
-    aes(colour=interestGroup), size = 2) 
+    aes(colour=educationLevel), size = 2) 
  
-g + facet_nodes(~educationLevel)+ 
+g + facet_nodes(~interestGroup)+ 
     th_foreground(foreground = "grey80",
                   border = TRUE)+
   theme(legend.position = "bottom")

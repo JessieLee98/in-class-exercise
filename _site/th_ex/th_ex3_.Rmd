@@ -1,0 +1,518 @@
+---
+title: "Take-home Exercise 3"
+description: |
+  Health of Residents
+author:
+  - name: LI HONGYI 
+    url: 
+    affiliation: SMU SCIS
+    affiliation_url: https://scis.smu.edu.sg
+date: "`r Sys.Date()`"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task Overview
+
+In this take-home exercise, static and interactive methods should be used properly to explore the health of employers according to the data gathered from participants in Ohio, USA. The health of residents will be explored by showing relationship between income and expenditure, expenditure patterns in different groups.
+
+visualization ideas:
+
+1. dotplot: saving of each participant x: saving (wage-expenditure),(tooltip: participant id, line chart of wage and different expenditure of each participant throughout the study period)
+2. scaterplot: wage and expenditure vs joviality (interactive)(color: education level, age group)
+3. boxplot: (drop down list)(anova) wage/expenditure by education level, age group, joviality group
+
+# install packages
+
+```{r}
+packages <- c('ggiraph', 'plotly', 
+              'DT', 'patchwork',
+              'gganimate', 'tidyverse',
+              'readxl', 'gifski', 'gapminder',
+              'treemap', 'treemapify', 'rstantools',
+              'rPackedBar', 'lubridate', 'ggstatsplot')
+
+for (p in packages){
+  if (!require(p,character.only=T)){
+    install.packages(p)
+  }
+  library(p, character.only=T)
+}
+```
+
+# import data
+
+```{r eval=FALSE}
+FinancialJournal <- read_csv("data/FinancialJournal.csv")
+
+Participants <- read_csv("data/Participants.csv")
+```
+
+# Data Preparation
+
+## remove duplicated lines
+
+```{r eval=FALSE}
+FinancialJournal<- FinancialJournal %>% unique()
+
+write_csv(FinancialJournal,
+          "data/FinancialJournal_new.csv")
+```
+
+## reduce data size
+
+```{r eval=FALSE}
+write_rds(FinancialJournal,
+          "data/rds/FinancialJournal.rds")
+
+FinancialJournal <- 
+  read_rds("data/rds/FinancialJournal.rds")
+
+```
+
+## Remove the first row (unusual wage row) of each participant
+
+Data issues and solutions:
+1) Before data preparation, Tableau is used to give us an overview of the dataset. It shows abnormally big amounts in wage of every participants in 2022-3-1. After removing those amounts, the sum of wage everyday are same, which means this is a data value error and all those rows should be removed.
+
+2) As for the rent adjustment category, it only has few records at the first beginning with very big amount which will definitely influence the analysis of savings (wage - all expenditure). Thus, all the rows of rent adjustment are removed.
+
+```{r eval=FALSE}
+FinancialJournalNew <- FinancialJournal %>%
+  group_by(participantId) %>%
+  slice(2:n()) %>%
+  mutate(date = date(timestamp)) %>%
+  ungroup() %>%
+  group_by(participantId, category, date) %>%
+  summarise(amount = sum(amount)) %>%
+  subset(category!="RentAdjustment" ) %>%
+  ungroup() %>%
+  mutate(year = year(date), 
+         year_month = format_ISO8601(date, precision = "ym"),
+         mday = day(date),
+         wday = wday(date)) 
+```
+
+
+## Table Rotation 
+
+```{r eval=FALSE}
+WageExpenditure <- FinancialJournalNew %>%
+  group_by(participantId, category) %>%
+  summarise(savings = abs(sum(amount))) %>%
+  ungroup()
+```
+
+
+Change each category into columns and create a new column called savings (this is a merged table with everything inside except for timestamp)
+
+```{r eval=FALSE}
+WageExpenditure <- WageExpenditure %>%
+  mutate(i = row_number()) %>%
+  spread(category, savings) %>%
+  select(-i)
+WageExpenditure[is.na(WageExpenditure)] <- 0
+WageExpenditure <-WageExpenditure %>%
+  group_by(participantId) %>% 
+  summarise(Education=sum(Education),Food=sum(Food),
+            Recreation=sum(Recreation),Shelter=sum(Shelter),
+            Wage=sum(Wage)) %>% 
+  mutate(Savings= Wage - Education - Food - Recreation - Shelter)
+```
+
+## Extract Prticipants attributes
+
+```{r eval=FALSE}
+Participants <- select(Participants, c('participantId', 'educationLevel', 'age', 'joviality'))
+
+Participants$AgeGroup <- cut(Participants$age,
+                         breaks = c(18,31,46,61),
+                         labels = c("YoungAdults","MiddleAgedAdults", "OldAdults"))
+
+Participants$JovialityGroup <- cut(Participants$joviality,
+                         breaks = c(0,0.35,0.65,1),
+                         labels = c("LowJoviality","MiddleJoviality", "HighJoviality"))
+```
+
+## Table Merge
+
+Join WageExpenditure with Participants table to get more attribute of each participant
+
+```{r eval=FALSE}
+WageExpenditureMerged <- merge(x = WageExpenditure, y = Participants, by = "participantId")
+
+head(WageExpenditureMerged)
+```
+
+Extract merged table
+
+```{r eval=FALSE}
+write_csv(WageExpenditureMerged,
+          "data/WageExpenditureMerged.csv")
+
+```
+
+# Visualization 
+
+## Import data
+````{r}
+WageExpenditureMerged <- read_csv("data/WageExpenditureMerged.csv")
+
+```
+
+## Dotplot
+
+This dotplot shows the overall distribution of the saving of participants in the whole city. We can see the majority of the value are around 0, which means most of the participants cannot save money in every month. However, the range of savings is very large, the largest value reaches almost 2300000.
+
+```{r, fig.height=10, fig.width=10}
+p <- ggplot(data=WageExpenditureMerged,
+aes(x = Savings)) +
+geom_dotplot_interactive(
+aes(tooltip = participantId),
+stackgroups = TRUE,
+binwidth = 2000,
+dotsize = 0.5,
+method = "histodot") +
+scale_y_continuous(NULL,
+breaks = NULL)
+girafe(
+ggobj = p,
+width_svg = 6,
+height_svg = 6*0.618,
+options = list(
+opts_hover(css = "fill: #202020;"),
+opts_hover_inv(css = "opacity:0.2;")
+)
+)
+
+```
+
+
+## Scaterplot
+
+The scaterplots show the relationship between savings/wage/expenditure and joviality. It gives us the insight of which factors have a positive contribute to joviality. 
+
+Besides, with selecting one point(participant) in one plot, you can see the corresponding point in all the other plots, which gives us a better view of the expenditure pattern and income of a certain participant.
+
+```{r, fig.height=10, fig.width=10}
+d <- highlight_key(WageExpenditureMerged)
+p1 <- ggplot(data=d,
+             aes(x = joviality,y = Savings,
+                 color = educationLevel)) +
+  geom_point(size=0.5) +
+  geom_smooth(method = lm, size=0.1) +
+  coord_cartesian(xlim=c(0,1),ylim=c(0,260000)) 
+p2 <- ggplot(data=d,
+             aes(x = joviality,y = Wage,
+                 color = educationLevel)) +
+  geom_point(size=0.5) +
+  geom_smooth(method = lm, size=0.1) +
+  coord_cartesian(xlim=c(0,1),ylim=c(0,260000))
+p3 <- ggplot(data=d,
+             aes(x = joviality,y = Shelter,
+                 color = educationLevel)) +
+  geom_point(size=0.5) +
+  geom_smooth(method = lm, size=0.1) +
+  coord_cartesian(xlim=c(0,1),ylim=c(0,24000))
+p4 <- ggplot(data=d,
+             aes(x = joviality,y = Food,
+                 color = educationLevel)) +
+  geom_point(size=0.5) +
+  geom_smooth(method = lm, size=0.1)+
+  coord_cartesian(xlim=c(0,1),ylim=c(0,10000))
+p5 <- ggplot(data=d,
+             aes(x = joviality,y = Education,
+                 color = educationLevel)) +
+  geom_point(size=0.5) +
+  geom_smooth(method = lm, size=0.1)+
+  coord_cartesian(xlim=c(0,1),ylim=c(0,1500))
+p6 <- ggplot(data=d,
+             aes(x = joviality,y = Recreation,
+                 color = educationLevel)) +
+  geom_point(size=0.5) +
+  geom_smooth(method = lm, size=0.1) +
+  coord_cartesian(xlim=c(0,1),ylim=c(0,13000))
+subplot(style(ggplotly(p1), showlegend = FALSE),
+        style(ggplotly(p2), showlegend = FALSE),
+        style(ggplotly(p3), showlegend = FALSE),
+        style(ggplotly(p4), showlegend = FALSE),
+        style(ggplotly(p5), showlegend = FALSE),
+        style(ggplotly(p6), showlegend = FALSE),
+        nrows = 3, margin = 0.05, titleX = TRUE, titleY = TRUE)
+
+```
+
+## Boxplot - Anova
+
+In this part, we conducted anova test by generating boxplot with violin plot showing statistical information of the relationship between two selected variables: savings / different expenditure v.s. education level/ age group/ joviality level.
+
+In the future, we can put it into Shiny App with a more user-friendly interface by generating two drop down lists of the variables for users to choose.
+
+### Savings
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = educationLevel, 
+  y = Savings,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = AgeGroup, 
+  y = Savings,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = JovialityGroup, 
+  y = Savings,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+### Wage
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = educationLevel, 
+  y = Wage,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = AgeGroup, 
+  y = Wage,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = JovialityGroup, 
+  y = Wage,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+### Expenditure - Education
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = educationLevel, 
+  y = Education,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = AgeGroup, 
+  y = Education,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = JovialityGroup, 
+  y = Education,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+### Expenditure - Food
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = educationLevel, 
+  y = Food,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = AgeGroup, 
+  y = Food,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = JovialityGroup, 
+  y = Food,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+### Expenditure - Recreation
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = educationLevel, 
+  y = Recreation,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = AgeGroup, 
+  y = Recreation,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = JovialityGroup, 
+  y = Recreation,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+### Expenditure - Food
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = educationLevel, 
+  y = Shelter,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = AgeGroup, 
+  y = Shelter,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+```{r, fig.width=10, fig.height=10}
+ggbetweenstats(
+  data = WageExpenditureMerged,
+  x = JovialityGroup, 
+  y = Shelter,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
